@@ -17,10 +17,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies and build
+      - name: Install dependencies and check types
         run: |
           npm install
-          npm run build
+          npm run check-types
           cp ../../LICENSE .
         working-directory: ./packages/next-impl-cache-adapter
 

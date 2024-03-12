@@ -1,0 +1,40 @@
+name: Publish publish-cache-in-memory
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install dependencies and check types
+        run: |
+          npm install
+          npm run check-types
+          cp ../../LICENSE .
+        working-directory: ./packages/publish-cache-in-memory
+
+      - name: Publish on main
+        if: "!contains(github.ref_name, 'canary')"
+        run: |
+          npm set //registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}
+          npm publish --access public
+        working-directory: ./packages/publish-cache-in-memory
+
+      - name: Publish on canary
+        if: contains(github.ref_name, 'canary')
+        run: |
+          npm set //registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}
+          npm version --no-git-tag-version ${{github.ref_name}}
+          npm publish --tag canary --access public
+        working-directory: ./packages/publish-cache-in-memory

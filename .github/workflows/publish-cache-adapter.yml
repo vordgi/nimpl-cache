@@ -1,4 +1,4 @@
-name: Publish package
+name: Publish next-impl-cache-adapter
 
 on:
   release:
@@ -19,7 +19,7 @@ jobs:
 
       - name: Install dependencies and build
         run: |
-          npm ci
+          npm install
           npm run build
           cp ../../LICENSE .
         working-directory: ./packages/next-impl-cache-adapter

@@ -1,8 +1,10 @@
-name: Publish publish-cache-in-memory
+name: Publish next-impl-cache-in-memory
 
 on:
   release:
     types: [created]
+    tags:
+      - next-impl-cache-in-memory@*
 
 jobs:
   publish:
@@ -22,14 +24,14 @@ jobs:
           npm install
           npm run check-types
           cp ../../LICENSE .
-        working-directory: ./packages/publish-cache-in-memory
+        working-directory: ./packages/next-impl-cache-in-memory
 
       - name: Publish on main
         if: "!contains(github.ref_name, 'canary')"
         run: |
           npm set //registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}
           npm publish --access public
-        working-directory: ./packages/publish-cache-in-memory
+        working-directory: ./packages/next-impl-cache-in-memory
 
       - name: Publish on canary
         if: contains(github.ref_name, 'canary')
@@ -37,4 +39,4 @@ jobs:
           npm set //registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}
           npm version --no-git-tag-version ${{github.ref_name}}
           npm publish --tag canary --access public
-        working-directory: ./packages/publish-cache-in-memory
+        working-directory: ./packages/next-impl-cache-in-memory

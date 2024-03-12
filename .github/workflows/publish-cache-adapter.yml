@@ -3,6 +3,8 @@ name: Publish next-impl-cache-adapter
 on:
   release:
     types: [created]
+    tags:
+      - next-impl-cache-adapter@*
 
 jobs:
   publish:

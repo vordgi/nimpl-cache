@@ -23,8 +23,6 @@ const createServer = (cacheHandler, verifyRequest) => {
           buildIds.push(buildId);
         }
 
-        // onNewBuildReady();
-
         if (!key || !method) return res.end();
 
         if (method === 'get') {
@@ -41,15 +39,16 @@ const createServer = (cacheHandler, verifyRequest) => {
           /** @type {{data: any, ctx: any}} */
           const body = await new Promise(resolve => {
             let rowData = '';
-  
+
             req.on('data', chunk => {
               rowData += chunk;
             });
-  
+
             req.on('end', () => {
               resolve(JSON.parse(rowData));
             });
           })
+          body.data.headers['x-next-cache-tags'] = body.data.headers['x-next-cache-tags'].split(',').map(r => buildId + r).join(',');
           await cacheHandler.set(buildId + key, body.data, body.ctx);
           return res.end();
         }

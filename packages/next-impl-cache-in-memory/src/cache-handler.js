@@ -1,3 +1,4 @@
+/** @type {Map<string, { tags: string[], value: any, lastModified: number }>} */
 const cache = new Map();
 
 module.exports = class CacheHandler {
@@ -26,10 +27,20 @@ module.exports = class CacheHandler {
     /**
      * set cache
      * @param {string} key cache key
-     * @param {string} data data to store
+     * @param {any} data data to store
      * @param {any} ctx next.js context
      */
     async set(key, data, ctx) {
+        if (data.kind === 'PAGE') {
+            const tags = data.headers['x-next-cache-tags'].split(',');
+            if (!ctx.tags) {
+                ctx.tags = tags;
+            } else {
+                tags.forEach(tag => {
+                    if (!ctx.tags.includes(tag)) ctx.tags.push(tag);
+                })
+            }
+        }
         cache.set(key, {
             value: data,
             lastModified: Date.now(),
@@ -42,11 +53,11 @@ module.exports = class CacheHandler {
      * @param {string} tag cache tag
      */
     async revalidateTag(tag) {
-        for (let [key, value] of cache) {
-            if (value.tags.includes(tag)) {
+        cache.forEach((value, key) => {
+            if (value.tags?.includes(tag)) {
                 cache.delete(key);
             }
-        }
+        })
     }
 
     /**

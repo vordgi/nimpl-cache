@@ -75,7 +75,7 @@ module.exports = class AppAdapter {
             await this.remoteCacheHandler.set(key, data, ctx);
             return savedData;
         } else {
-            const savedData = await this.remoteCacheHandler.set(key, data, ctx);
+            const savedData = await this.cacheHandler.set(key, data, ctx);
             return savedData;
         }
     }

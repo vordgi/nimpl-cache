@@ -1,5 +1,6 @@
 const http = require('http');
 
+/** @type {string[]} */
 const buildIds = [];
 
 /**
@@ -48,7 +49,9 @@ const createServer = (cacheHandler, verifyRequest) => {
               resolve(JSON.parse(rowData));
             });
           })
-          body.data.headers['x-next-cache-tags'] = body.data.headers['x-next-cache-tags'].split(',').map(r => buildId + r).join(',');
+          /** @type {string[]} */
+          const headerTags = body.data.headers['x-next-cache-tags'].split(',');
+          body.data.headers['x-next-cache-tags'] = headerTags.map(r => buildId + r).join(',');
           await cacheHandler.set(buildId + key, body.data, body.ctx);
           return res.end();
         }

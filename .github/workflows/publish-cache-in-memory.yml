@@ -21,7 +21,7 @@ jobs:
       - name: Install dependencies and check types
         run: |
           npm install
-          npm run check-types
+          npm run build:types
           cp ../../LICENSE .
         working-directory: ./packages/next-impl-cache-in-memory
 

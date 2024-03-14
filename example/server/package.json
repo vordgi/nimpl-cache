@@ -1,0 +1,12 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node index"
+  },
+  "dependencies": {
+    "next-impl-cache-adapter": "latest",
+    "next-impl-cache-in-memory": "latest"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "next-impl-cache-in-memory",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "",
   "main": "src/cache-handler",
   "files": [

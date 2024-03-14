@@ -7,7 +7,7 @@
     "src"
   ],
   "scripts": {
-    "check-types": "tsc"
+    "build:types": "tsc"
   },
   "keywords": [
     "next",

@@ -32,6 +32,7 @@ module.exports = class CacheHandler {
      */
     async set(key, data, ctx) {
         if (data.kind === 'PAGE') {
+            /** @type {string[]} */
             const tags = data.headers['x-next-cache-tags'].split(',');
             if (!ctx.tags) {
                 ctx.tags = tags;

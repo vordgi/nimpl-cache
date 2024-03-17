@@ -1,6 +1,6 @@
 {
   "name": "next-impl-cache-adapter",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "",
   "main": "src/app-adapter",
   "files": [

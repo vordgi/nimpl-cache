@@ -3,9 +3,17 @@ const http = require('http');
 /** @type {string[]} */
 const buildIds = [];
 
+/** @type {{[type: string]: {[url: string]: Promise<any>}}} */
+const memo = {
+  get: {},
+  set: {},
+  revalidate: {},
+  delete: {},
+};
+
 /**
  * Create server to control cache remotely
- * @param {any} cacheHandler custom cache-handler
+ * @param {BaseCacheHandler} cacheHandler custom cache-handler
  * @param {(req: http.IncomingMessage) => boolean=} verifyRequest callback to verify request
  * @returns server
  */
@@ -26,8 +34,16 @@ const createServer = (cacheHandler, verifyRequest) => {
 
         if (!key || !method) return res.end();
 
+        const requestKey = buildId + key;
+
         if (method === 'get') {
-          const data = await cacheHandler.get(buildId + key);
+          if (!memo.get[requestKey]) {
+            memo.get[requestKey] = cacheHandler.get(requestKey).finally((/** @type {any} */ d) => {
+              delete memo.get[requestKey];
+              return d;
+            });
+          }
+          const data = await memo.get[req.url];
           if (data) {
             return res.end(JSON.stringify(data));
           } else {
@@ -37,46 +53,68 @@ const createServer = (cacheHandler, verifyRequest) => {
         }
 
         if (method === 'post') {
-          /** @type {{data: any, ctx: any}} */
-          const body = await new Promise(resolve => {
-            let rowData = '';
+          if (!memo.set[requestKey]) {
+            /** @type {{data: any, ctx: any}} */
+            memo.set[requestKey] = new Promise(resolve => {
+              let rowData = '';
 
-            req.on('data', chunk => {
-              rowData += chunk;
-            });
+              req.on('data', chunk => {
+                rowData += chunk;
+              });
 
-            req.on('end', () => {
-              resolve(JSON.parse(rowData));
-            });
-          })
-          /** @type {string[]} */
-          const headerTags = body.data.headers['x-next-cache-tags'].split(',');
-          body.data.headers['x-next-cache-tags'] = headerTags.map(r => buildId + r).join(',');
-          await cacheHandler.set(buildId + key, body.data, body.ctx);
+              req.on('end', () => {
+                resolve(JSON.parse(rowData));
+              });
+            }).then(body => {
+              /** @type {string[]} */
+              const headerTags = body.data.headers['x-next-cache-tags'].split(',');
+              body.data.headers['x-next-cache-tags'] = headerTags.map(r => buildId + r).join(',');
+              return cacheHandler.set(requestKey, body.data, body.ctx);
+            }).finally((/** @type {any} */ d) => {
+              delete memo.set[requestKey];
+              return d;
+            })
+          }
+          await memo.set[requestKey];
           return res.end();
         }
 
         if (method === 'delete') {
-          await cacheHandler.revalidateTag(buildId + key);
+          if (!memo.revalidate[requestKey]) {
+            memo.revalidate[requestKey] = cacheHandler.revalidateTag(requestKey).finally((/** @type {any} */ d) => {
+              delete memo.revalidate[requestKey];
+              return d;
+            })
+          }
+          await memo.revalidate[requestKey];
           return res.end();
         }
 
-        if (method === 'put') { // new build ready
-          const cachedKeys = await cacheHandler.keys();
-          const targetBuildIdIndex = buildIds.indexOf(buildId);
-          const oldBuildIds = buildIds.slice(0, targetBuildIdIndex);
-
-          for await (const cachedKey of cachedKeys) {
-            if (oldBuildIds.some(id => cachedKey.startsWith(id))) {
-              await cacheHandler.delete(cachedKey);
-            }
+        // new build ready
+        if (method === 'put') {
+          if (!memo.delete[requestKey]) {
+            memo.delete[requestKey] = cacheHandler.keys().then(async (/** @type {any} */ cachedKeys) => {
+              const targetBuildIdIndex = buildIds.indexOf(buildId);
+              const oldBuildIds = buildIds.slice(0, targetBuildIdIndex);
+    
+              for await (const cachedKey of cachedKeys) {
+                if (oldBuildIds.some(id => cachedKey.startsWith(id))) {
+                  await cacheHandler.delete(cachedKey);
+                }
+              }
+            }).finally(() => {
+              delete memo.delete[requestKey];
+            })
           }
+          await memo.delete[requestKey];
+          return res.end();
         }
       } catch (e) {
         console.log('error on cache processing', e);
       }
     }
   )
+
   return server;
 }
 

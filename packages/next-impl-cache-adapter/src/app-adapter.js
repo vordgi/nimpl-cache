@@ -2,7 +2,7 @@ const RemoteCacheHandler = require("./remote-cache-handler");
 
 /**
  * @typedef Configuration
- * @property {any} CacheHandler custom cache-handler
+ * @property {typeof BaseCacheHandler} CacheHandler custom cache-handler
  * @property {string} buildId unique build id
  * @property {string} cacheUrl server cache url
  * @property {'local' | 'remote' | 'isomorphic'=} [cacheMode='isomorphic'] cache mode
@@ -20,7 +20,7 @@ module.exports = class AppAdapter {
     /** @type {string} cache url */
     cacheUrl;
 
-    /** @type {any} */
+    /** @type {BaseCacheHandler} */
     cacheHandler;
 
     /** @type {RemoteCacheHandler} */

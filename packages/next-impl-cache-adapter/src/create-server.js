@@ -18,6 +18,12 @@ const memo = {
  * @returns server
  */
 const createServer = (cacheHandler, verifyRequest) => {
+  const isFledgedCacheHandler = cacheHandler.keys && !cacheHandler.delete;
+
+  if (!isFledgedCacheHandler) {
+    console.error('The current cacheHandler does not support deletion of outdated data. Missing methods: keys and delete');
+  }
+
   const server = http.createServer(
     async (req, res) => {
       try {
@@ -70,9 +76,8 @@ const createServer = (cacheHandler, verifyRequest) => {
               const headerTags = body.data.headers['x-next-cache-tags'].split(',');
               body.data.headers['x-next-cache-tags'] = headerTags.map(r => buildId + r).join(',');
               return cacheHandler.set(requestKey, body.data, body.ctx);
-            }).finally((/** @type {any} */ d) => {
+            }).finally(() => {
               delete memo.set[requestKey];
-              return d;
             })
           }
           await memo.set[requestKey];
@@ -81,9 +86,8 @@ const createServer = (cacheHandler, verifyRequest) => {
 
         if (method === 'delete') {
           if (!memo.revalidate[requestKey]) {
-            memo.revalidate[requestKey] = cacheHandler.revalidateTag(requestKey).finally((/** @type {any} */ d) => {
+            memo.revalidate[requestKey] = cacheHandler.revalidateTag(requestKey).finally(() => {
               delete memo.revalidate[requestKey];
-              return d;
             })
           }
           await memo.revalidate[requestKey];
@@ -91,14 +95,16 @@ const createServer = (cacheHandler, verifyRequest) => {
         }
 
         // new build ready
-        if (method === 'put') {
+        if (method === 'put' && isFledgedCacheHandler) {
           if (!memo.delete[requestKey]) {
-            memo.delete[requestKey] = cacheHandler.keys().then(async (/** @type {any} */ cachedKeys) => {
+            // @ts-ignore
+            memo.delete[requestKey] = cacheHandler.keys().then(async (cachedKeys) => {
               const targetBuildIdIndex = buildIds.indexOf(buildId);
               const oldBuildIds = buildIds.slice(0, targetBuildIdIndex);
-    
+
               for await (const cachedKey of cachedKeys) {
                 if (oldBuildIds.some(id => cachedKey.startsWith(id))) {
+                  // @ts-ignore
                   await cacheHandler.delete(cachedKey);
                 }
               }

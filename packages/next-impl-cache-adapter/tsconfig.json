@@ -8,5 +8,5 @@
     "declarationMap": true,
     "emitDeclarationOnly": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "types.d.ts"]
 }

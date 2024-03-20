@@ -8,5 +8,6 @@ yarn.lock
 yarn-error.log
 *.d.ts
 *.d.ts.map
+!packages/*/types.d.ts
 !env.d.ts
 *.local

@@ -3,7 +3,7 @@ name: Publish @nimpl/cache-adapter
 on:
   push:
     tags:
-      - @nimpl/cache-adapter@*
+      - nimpl/cache-adapter@*
 
 jobs:
   publish:
@@ -36,6 +36,5 @@ jobs:
         if: contains(github.ref_name, 'canary')
         run: |
           npm set //registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}
-          npm version --no-git-tag-version ${{github.ref_name}}
           npm publish --tag canary --access public
         working-directory: ./packages/cache-adapter

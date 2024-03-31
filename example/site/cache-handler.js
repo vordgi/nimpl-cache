@@ -1,6 +1,6 @@
 // @ts-check
-const AppAdapter = require('next-impl-cache-adapter');
-const CacheHandler = require('next-impl-cache-in-memory');
+const AppAdapter = require('@nimpl/cache-adapter');
+const CacheHandler = require('@nimpl/cache-in-memory');
 
 class CustomCacheHandler extends AppAdapter {
     /** @param {any} options */

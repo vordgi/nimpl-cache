@@ -18,7 +18,7 @@ yarn add @nimpl/cache-in-memory
 
 ## Examples
 
-Base example with nimpl-cache-in-memory. [See example](https://github.com/vordgi/nimpl-cache/tree/main/example).
+Base example with @nimpl/cache-in-memory. [See example](https://github.com/vordgi/nimpl-cache/tree/main/example).
 
 ## License
 

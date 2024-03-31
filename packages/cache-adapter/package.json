@@ -1,5 +1,5 @@
 {
-  "name": "next-impl-cache-adapter",
+  "name": "@nimpl/cache-adapter",
   "version": "0.1.4",
   "description": "",
   "main": "src/app-adapter",
@@ -20,7 +20,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/vordgi/next-impl-cache.git"
+    "url": "git://github.com/vordgi/nimpl-cache.git"
   },
   "author": {
     "name": "Savelyev Alexander",

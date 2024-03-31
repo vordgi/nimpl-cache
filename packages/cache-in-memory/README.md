@@ -1,37 +1,25 @@
-# next-impl-cache-in-memory
+# @nimpl/cache-in-memory
 
 Base cacheHandler for next.js, which cache data in-memory
+
+Visit https://nimpl.tech/cache-in-memory to view the full documentation.
 
 ## Installation
 
 **Using npm:**
 ```bash
-npm i next-impl-cache-in-memory
+npm i @nimpl/cache-in-memory
 ```
 
 **Using yarn:**
 ```bash
-yarn add next-impl-cache-in-memory
+yarn add @nimpl/cache-in-memory
 ```
-
-## Usage
-
-You can use cacheHandler by specifying the path to it in the application configuration:
-
-```js
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-    cacheMaxMemorySize: 0,
-    cacheHandler: require.resolve('next-impl-cache-in-memory'),
-};
-```
-
-However, it is recommended to use it together with [next-impl-cache-adapter](https://github.com/vordgi/next-impl-cache/tree/main/packages/next-impl-cache-adapter). The package will allow you to expand the capabilities of cacheHandler and also reuse the cache between different application instances. More details
 
 ## Examples
 
-Base example with next-impl-cache-in-memory. [See example](https://github.com/vordgi/next-impl-cache/tree/main/example).
+Base example with nimpl-cache-in-memory. [See example](https://github.com/vordgi/nimpl-cache/tree/main/example).
 
 ## License
 
-[MIT](https://github.com/vordgi/next-impl-cache/blob/main/LICENSE)
+[MIT](https://github.com/vordgi/nimpl-cache/blob/main/LICENSE)

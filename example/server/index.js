@@ -1,7 +1,7 @@
 // @ts-check
 
-const createServer = require('next-impl-cache-adapter/src/create-server');
-const CacheHandler = require('next-impl-cache-in-memory');
+const createServer = require('@nimpl/cache-adapter/src/create-server');
+const CacheHandler = require('@nimpl/cache-in-memory');
 
 const server = createServer(new CacheHandler({}));
 

@@ -1,6 +1,6 @@
 {
-  "name": "next-impl-cache-in-memory",
-  "version": "0.1.3",
+  "name": "@nimpl/cache-in-memory",
+  "version": "0.2.0",
   "description": "",
   "main": "src/cache-handler",
   "files": [
@@ -21,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/vordgi/next-impl-cache.git"
+    "url": "git://github.com/vordgi/nimpl-cache.git"
   },
   "author": {
     "name": "Savelyev Alexander",

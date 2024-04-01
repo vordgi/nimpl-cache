@@ -1,9 +1,9 @@
-name: Publish next-impl-cache-in-memory
+name: Publish @nimpl/cache-in-memory
 
 on:
   push:
     tags:
-      - next-impl-cache-in-memory@*
+      - nimpl/cache-in-memory@*
 
 jobs:
   publish:
@@ -23,19 +23,18 @@ jobs:
           npm install
           npm run build:types
           cp ../../LICENSE .
-        working-directory: ./packages/next-impl-cache-in-memory
+        working-directory: ./packages/cache-in-memory
 
       - name: Publish on main
         if: "!contains(github.ref_name, 'canary')"
         run: |
           npm set //registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}
           npm publish --access public
-        working-directory: ./packages/next-impl-cache-in-memory
+        working-directory: ./packages/cache-in-memory
 
       - name: Publish on canary
         if: contains(github.ref_name, 'canary')
         run: |
           npm set //registry.npmjs.org/:_authToken=${{secrets.NPM_TOKEN}}
-          npm version --no-git-tag-version ${{github.ref_name}}
           npm publish --tag canary --access public
-        working-directory: ./packages/next-impl-cache-in-memory
+        working-directory: ./packages/cache-in-memory

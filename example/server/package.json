@@ -6,7 +6,7 @@
     "start": "node index"
   },
   "dependencies": {
-    "next-impl-cache-adapter": "latest",
-    "next-impl-cache-in-memory": "latest"
+    "@nimpl/cache-adapter": "latest",
+    "@nimpl/cache-in-memory": "latest"
   }
 }

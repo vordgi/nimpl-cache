@@ -1,17 +1,17 @@
-module.exports = class RemoteCacheHandler {
-    /** @type {string} next.js options */
-    options;
+export class RemoteCacheHandler {
+    /** next.js options */
+    options: any;
 
-    /** @type {URL} server url */
-    url;
+    /** server url */
+    url: URL;
 
     /**
      * remote cache handler
-     * @param {RemoteCacheHandler['options']} options next.js options
-     * @param {string} url server url
-     * @param {string} buildId unique build id
+     * @param options next.js options
+     * @param url server url
+     * @param unique build id
      */
-    constructor(options, url, buildId) {
+    constructor(options: RemoteCacheHandler['options'], url: string, buildId: string) {
         // should we transfer options?
         this.options = options
         const serverUrl = new URL(url);
@@ -21,10 +21,10 @@ module.exports = class RemoteCacheHandler {
 
     /**
      * get cache
-     * @param {string} key cache key
-     * @returns {Promise<any>} cached data
+     * @param key cache key
+     * @returns cached data
      */
-    async get(key) {
+    async get(key: string) {
         const url = new URL(this.url);
         url.searchParams.set('key', key);
         const resp = await fetch(url.toString());
@@ -36,11 +36,11 @@ module.exports = class RemoteCacheHandler {
 
     /**
      * set cache
-     * @param {string} key cache key
-     * @param {any} data data to store
-     * @param {any} ctx next.js context
+     * @param key cache key
+     * @param data data to store
+     * @param ctx next.js context
      */
-    async set(key, data, ctx) {
+    async set(key: string, data: any, ctx: any) {
         const url = new URL(this.url);
         url.searchParams.set('key', key);
         await fetch(url.toString(), {
@@ -54,9 +54,9 @@ module.exports = class RemoteCacheHandler {
 
     /**
      * revalidate tag in cache
-     * @param {string} tag cache tag
+     * @param tag cache tag
      */
-    async revalidateTag(tag) {
+    async revalidateTag(tag: string) {
         const url = new URL(this.url);
         url.searchParams.set('key', tag);
         await fetch(url.toString(), {

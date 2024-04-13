@@ -1,36 +1,18 @@
-const RemoteCacheHandler = require("./remote-cache-handler");
+import { type BaseCacheHandlerInterface, type AdapterConfiguration } from "./types";
+import { RemoteCacheHandler } from "./remote-cache-handler";
 
-/**
- * @typedef Configuration
- * @property {typeof BaseCacheHandler} CacheHandler custom cache-handler
- * @property {string} buildId unique build id
- * @property {string} cacheUrl server cache url
- * @property {'local' | 'remote' | 'isomorphic'=} [cacheMode='isomorphic'] cache mode
- * @property {any} options options
- * @property {boolean=} [buildReady=false] mark current build as main and remove cache for all previous
- */
+export class AppAdapter {
+    private buildId: AdapterConfiguration['buildId'];
 
-module.exports = class AppAdapter {
-    /** @type {string=} unique build id  */
-    buildId;
+    private cacheMode: AdapterConfiguration['cacheMode'];
 
-    /** @type {'local' | 'remote' | 'isomorphic'} caching mode */
-    cacheMode;
+    private cacheUrl: AdapterConfiguration['cacheUrl'];
 
-    /** @type {string} cache url */
-    cacheUrl;
+    private cacheHandler: BaseCacheHandlerInterface;
 
-    /** @type {BaseCacheHandler} */
-    cacheHandler;
+    private remoteCacheHandler: any;
 
-    /** @type {RemoteCacheHandler} */
-    remoteCacheHandler;
-
-    /**
-     * app adapter
-     * @param {Configuration} configuration 
-     */
-    constructor({ CacheHandler, buildId, cacheUrl, cacheMode = 'isomorphic', options, buildReady }) {
+    constructor({ CacheHandler, buildId, cacheUrl, cacheMode = 'isomorphic', options, buildReady }: AdapterConfiguration) {
         if (!CacheHandler || !cacheUrl || !buildId) {
             throw new Error('Invalid configuration');
         }
@@ -47,10 +29,10 @@ module.exports = class AppAdapter {
 
     /**
      * get cache
-     * @param {string} key cache key
-     * @returns {Promise<any>} cached data
+     * @param key cache key
+     * @returns cached data
      */
-    async get(key) {
+    async get(key: string) {
         if (this.cacheMode === 'remote') {
             const data = await this.remoteCacheHandler.get(key);
             return data;
@@ -62,11 +44,11 @@ module.exports = class AppAdapter {
 
     /**
      * set cache
-     * @param {string} key cache key
-     * @param {string} data data to store
-     * @param {any} ctx next.js context
+     * @param key cache key
+     * @param data data to store
+     * @param ctx next.js context
      */
-    async set(key, data, ctx) {
+    async set(key: string, data: any, ctx: any) {
         if (this.cacheMode === 'remote') {
             const savedData = await this.remoteCacheHandler.set(key, data, ctx);
             return savedData;
@@ -82,9 +64,9 @@ module.exports = class AppAdapter {
 
     /**
      * revalidate tag in cache
-     * @param {string} tag cache tag
+     * @param tag cache tag
      */
-    async revalidateTag(tag) {
+    async revalidateTag(tag: string) {
         if (this.cacheMode === 'remote') {
             await this.remoteCacheHandler.revalidateTag(tag);
         } else if (this.cacheMode === 'isomorphic') {

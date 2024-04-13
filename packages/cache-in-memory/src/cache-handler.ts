@@ -1,39 +1,34 @@
-/** @type {Map<string, { tags: string[], value: any, lastModified: number }>} */
-const cache = new Map();
+const cache = new Map<string, { tags: string[], value: any, lastModified: number }>();
 
 module.exports = class CacheHandler {
-    /**
-     * @type any
-     * options passed from next.js
-     */
-    options;
+    /** options passed from next.js */
+    options: any;
 
     /**
-     * @param {any} options passed from next.js
+     * @param options options passed from next.js
      */
-    constructor(options) {
+    constructor(options: any) {
         this.options = options;
     }
 
     /**
      * get cache
-     * @param {string} key cache key
-     * @returns {Promise<any>} cached data
+     * @param key cache key
+     * @returns cached data
      */
-    async get(key) {
+    async get(key: string) {
         return cache.get(key);
     }
 
     /**
      * set cache
-     * @param {string} key cache key
-     * @param {any} data data to store
-     * @param {any} ctx next.js context
+     * @param key cache key
+     * @param data data to store
+     * @param ctx next.js context
      */
-    async set(key, data, ctx) {
+    async set(key: string, data: any, ctx: any) {
         if (data.kind === 'PAGE') {
-            /** @type {string[]} */
-            const tags = data.headers['x-next-cache-tags'].split(',');
+            const tags: string[] = data.headers['x-next-cache-tags'].split(',');
             if (!ctx.tags) {
                 ctx.tags = tags;
             } else {
@@ -51,9 +46,9 @@ module.exports = class CacheHandler {
 
     /**
      * revalidate tag in cache
-     * @param {string} tag cache tag
+     * @param tag cache tag
      */
-    async revalidateTag(tag) {
+    async revalidateTag(tag: string) {
         cache.forEach((value, key) => {
             if (value.tags?.includes(tag)) {
                 cache.delete(key);
@@ -62,12 +57,11 @@ module.exports = class CacheHandler {
     }
 
     /**
-     * get cache
-     * @returns {Promise<string[]>} cache keys
+     * get cached keys
+     * @returns cache keys
      */
     async keys() {
-        /** @type {string[]} */
-        const list = [];
+        const list: string[] = [];
         cache.forEach((_, key) => {
             list.push(key);
         })
@@ -76,10 +70,10 @@ module.exports = class CacheHandler {
     }
 
     /**
-     * set cache key
-     * @param {string} key cache key
+     * delete cache for key
+     * @param key cache key
      */
-    async delete(key) {
+    async delete(key: string) {
         cache.delete(key);
     }
 }

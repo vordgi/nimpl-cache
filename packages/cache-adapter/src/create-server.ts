@@ -1,10 +1,9 @@
-const http = require('http');
+import { createServer as createHttpServer, type IncomingMessage } from 'http';
+import { type BaseCacheHandlerInterface } from './types';
 
-/** @type {string[]} */
-const buildIds = [];
+const buildIds: string[] = [];
 
-/** @type {{[type: string]: {[url: string]: Promise<any>}}} */
-const memo = {
+const inMemoryCache: { [type: string]: { [url: string]: Promise<any> } } = {
   get: {},
   set: {},
   revalidate: {},
@@ -13,18 +12,18 @@ const memo = {
 
 /**
  * Create server to control cache remotely
- * @param {BaseCacheHandler} cacheHandler custom cache-handler
- * @param {(req: http.IncomingMessage) => boolean=} verifyRequest callback to verify request
+ * @param cacheHandler custom cache-handler
+ * @param verifyRequest callback to verify request
  * @returns server
  */
-const createServer = (cacheHandler, verifyRequest) => {
+export const createServer = (cacheHandler: BaseCacheHandlerInterface, verifyRequest?: (req: IncomingMessage) => boolean) => {
   const isFledgedCacheHandler = cacheHandler.keys && !cacheHandler.delete;
 
   if (!isFledgedCacheHandler) {
     console.error('The current cacheHandler does not support deletion of outdated data. Missing methods: keys and delete');
   }
 
-  const server = http.createServer(
+  const server = createHttpServer(
     async (req, res) => {
       try {
         if (!req.url || (verifyRequest && !verifyRequest(req))) return res.end();
@@ -43,13 +42,15 @@ const createServer = (cacheHandler, verifyRequest) => {
         const requestKey = buildId + key;
 
         if (method === 'get') {
-          if (!memo.get[requestKey]) {
-            memo.get[requestKey] = cacheHandler.get(requestKey).finally((/** @type {any} */ d) => {
-              delete memo.get[requestKey];
+          if (!inMemoryCache.get[requestKey]) {
+            inMemoryCache.get[requestKey] = cacheHandler.get(requestKey).then((d: any) => {
+              delete inMemoryCache.get[requestKey];
               return d;
+            }).catch(() => {
+              return null;
             });
           }
-          const data = await memo.get[req.url];
+          const data = await inMemoryCache.get[req.url];
           if (data) {
             return res.end(JSON.stringify(data));
           } else {
@@ -59,9 +60,8 @@ const createServer = (cacheHandler, verifyRequest) => {
         }
 
         if (method === 'post') {
-          if (!memo.set[requestKey]) {
-            /** @type {{data: any, ctx: any}} */
-            memo.set[requestKey] = new Promise(resolve => {
+          if (!inMemoryCache.set[requestKey]) {
+            inMemoryCache.set[requestKey] = new Promise<{ data: any, ctx: any }>(resolve => {
               let rowData = '';
 
               req.on('data', chunk => {
@@ -72,47 +72,44 @@ const createServer = (cacheHandler, verifyRequest) => {
                 resolve(JSON.parse(rowData));
               });
             }).then(body => {
-              /** @type {string[]} */
-              const headerTags = body.data.headers['x-next-cache-tags'].split(',');
+              const headerTags: string[] = body.data.headers['x-next-cache-tags'].split(',');
               body.data.headers['x-next-cache-tags'] = headerTags.map(r => buildId + r).join(',');
               return cacheHandler.set(requestKey, body.data, body.ctx);
             }).finally(() => {
-              delete memo.set[requestKey];
+              delete inMemoryCache.set[requestKey];
             })
           }
-          await memo.set[requestKey];
+          await inMemoryCache.set[requestKey];
           return res.end();
         }
 
         if (method === 'delete') {
-          if (!memo.revalidate[requestKey]) {
-            memo.revalidate[requestKey] = cacheHandler.revalidateTag(requestKey).finally(() => {
-              delete memo.revalidate[requestKey];
+          if (!inMemoryCache.revalidate[requestKey]) {
+            inMemoryCache.revalidate[requestKey] = cacheHandler.revalidateTag(requestKey).finally(() => {
+              delete inMemoryCache.revalidate[requestKey];
             })
           }
-          await memo.revalidate[requestKey];
+          await inMemoryCache.revalidate[requestKey];
           return res.end();
         }
 
         // new build ready
         if (method === 'put' && isFledgedCacheHandler) {
-          if (!memo.delete[requestKey]) {
-            // @ts-ignore
-            memo.delete[requestKey] = cacheHandler.keys().then(async (cachedKeys) => {
+          if (!inMemoryCache.delete[requestKey]) {
+            inMemoryCache.delete[requestKey] = cacheHandler.keys!().then(async (cachedKeys) => {
               const targetBuildIdIndex = buildIds.indexOf(buildId);
               const oldBuildIds = buildIds.slice(0, targetBuildIdIndex);
 
               for await (const cachedKey of cachedKeys) {
                 if (oldBuildIds.some(id => cachedKey.startsWith(id))) {
-                  // @ts-ignore
-                  await cacheHandler.delete(cachedKey);
+                  await cacheHandler.delete!(cachedKey);
                 }
               }
             }).finally(() => {
-              delete memo.delete[requestKey];
+              delete inMemoryCache.delete[requestKey];
             })
           }
-          await memo.delete[requestKey];
+          await inMemoryCache.delete[requestKey];
           return res.end();
         }
       } catch (e) {
@@ -123,5 +120,3 @@ const createServer = (cacheHandler, verifyRequest) => {
 
   return server;
 }
-
-module.exports = createServer;

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const cache = new Map<string, { tags: string[]; value: any; lastModified: number }>();
 
-module.exports = class CacheHandler {
+export default class CacheHandler {
     /** options passed from next.js */
     options: any;
 
@@ -77,4 +77,4 @@ module.exports = class CacheHandler {
     async delete(key: string) {
         cache.delete(key);
     }
-};
+}

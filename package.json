@@ -1,0 +1,19 @@
+{
+  "name": "nimpl-cache",
+  "version": "1.0.0",
+  "description": "Repository for implementing caching solutions in next.js",
+  "scripts": {
+    "nimpl:cache-adapter": "pnpm --filter @nimpl/cache-adapter",
+    "nimpl:cache-in-memory": "pnpm --filter @nimpl/cache-in-memory"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/vordgi/nimpl-cache.git"
+  },
+  "author": {
+    "name": "Savelyev Alexander",
+    "email": "vordgi1@gmail.com",
+    "url": "https://github.com/vordgi/"
+  },
+  "license": "MIT"
+}

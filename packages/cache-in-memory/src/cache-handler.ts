@@ -1,7 +1,9 @@
+import { type BaseCacheHandlerInterface } from "./types";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const cache = new Map<string, { tags: string[]; value: any; lastModified: number }>();
 
-export default class CacheHandler {
+export default class CacheHandler implements BaseCacheHandlerInterface {
     /** options passed from next.js */
     options: any;
 

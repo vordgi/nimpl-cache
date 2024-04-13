@@ -5,8 +5,7 @@
     "target": "ES6",
     "strict": true,
     "declaration": true,
-    "declarationMap": true,
-    "emitDeclarationOnly": true
+    "outDir": "dist"
   },
   "include": ["src/**/*"]
 }

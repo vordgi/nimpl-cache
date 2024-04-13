@@ -1,13 +1,13 @@
 {
   "name": "@nimpl/cache-in-memory",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "",
-  "main": "src/cache-handler",
+  "main": "dist/cache-handler",
   "files": [
-    "src"
+    "dist"
   ],
   "scripts": {
-    "build:types": "tsc"
+    "build": "tsc"
   },
   "keywords": [
     "next",

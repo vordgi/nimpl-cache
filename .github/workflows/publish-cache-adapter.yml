@@ -23,10 +23,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install dependencies and check types
+      - name: Install dependencies and build
         run: |
           npm install
-          npm run build:types
+          npm run build
           cp ../../LICENSE .
         working-directory: ./packages/cache-adapter
 

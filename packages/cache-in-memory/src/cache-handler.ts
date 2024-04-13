@@ -1,4 +1,5 @@
-const cache = new Map<string, { tags: string[], value: any, lastModified: number }>();
+/* eslint-disable @typescript-eslint/no-explicit-any */
+const cache = new Map<string, { tags: string[]; value: any; lastModified: number }>();
 
 module.exports = class CacheHandler {
     /** options passed from next.js */
@@ -27,21 +28,21 @@ module.exports = class CacheHandler {
      * @param ctx next.js context
      */
     async set(key: string, data: any, ctx: any) {
-        if (data.kind === 'PAGE') {
-            const tags: string[] = data.headers['x-next-cache-tags'].split(',');
+        if (data.kind === "PAGE") {
+            const tags: string[] = data.headers["x-next-cache-tags"].split(",");
             if (!ctx.tags) {
                 ctx.tags = tags;
             } else {
-                tags.forEach(tag => {
+                tags.forEach((tag) => {
                     if (!ctx.tags.includes(tag)) ctx.tags.push(tag);
-                })
+                });
             }
         }
         cache.set(key, {
             value: data,
             lastModified: Date.now(),
             tags: ctx.tags,
-        })
+        });
     }
 
     /**
@@ -53,7 +54,7 @@ module.exports = class CacheHandler {
             if (value.tags?.includes(tag)) {
                 cache.delete(key);
             }
-        })
+        });
     }
 
     /**
@@ -64,7 +65,7 @@ module.exports = class CacheHandler {
         const list: string[] = [];
         cache.forEach((_, key) => {
             list.push(key);
-        })
+        });
 
         return list;
     }
@@ -76,4 +77,4 @@ module.exports = class CacheHandler {
     async delete(key: string) {
         cache.delete(key);
     }
-}
+};

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export class RemoteCacheHandler {
     /** next.js options */
     options: any;
@@ -11,12 +12,12 @@ export class RemoteCacheHandler {
      * @param url server url
      * @param unique build id
      */
-    constructor(options: RemoteCacheHandler['options'], url: string, buildId: string) {
+    constructor(options: RemoteCacheHandler["options"], url: string, buildId: string) {
         // should we transfer options?
-        this.options = options
+        this.options = options;
         const serverUrl = new URL(url);
-        serverUrl.searchParams.set('buildId', buildId);
-        this.url = serverUrl
+        serverUrl.searchParams.set("buildId", buildId);
+        this.url = serverUrl;
     }
 
     /**
@@ -26,7 +27,7 @@ export class RemoteCacheHandler {
      */
     async get(key: string) {
         const url = new URL(this.url);
-        url.searchParams.set('key', key);
+        url.searchParams.set("key", key);
         const resp = await fetch(url.toString());
 
         if (resp.status !== 200) return;
@@ -42,13 +43,13 @@ export class RemoteCacheHandler {
      */
     async set(key: string, data: any, ctx: any) {
         const url = new URL(this.url);
-        url.searchParams.set('key', key);
+        url.searchParams.set("key", key);
         await fetch(url.toString(), {
-            method: 'POST',
+            method: "POST",
             body: JSON.stringify({
                 data,
                 ctx,
-            })
+            }),
         });
     }
 
@@ -58,9 +59,9 @@ export class RemoteCacheHandler {
      */
     async revalidateTag(tag: string) {
         const url = new URL(this.url);
-        url.searchParams.set('key', tag);
+        url.searchParams.set("key", tag);
         await fetch(url.toString(), {
-            method: 'DELETE',
+            method: "DELETE",
         });
     }
 
@@ -70,7 +71,7 @@ export class RemoteCacheHandler {
     async deleteOld() {
         const url = new URL(this.url);
         await fetch(url.toString(), {
-            method: 'PUT',
+            method: "PUT",
         });
     }
 }

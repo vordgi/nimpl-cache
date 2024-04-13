@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export interface BaseCacheHandlerConstructor {
     new (options: any): BaseCacheHandlerInterface;
 }
@@ -21,9 +22,9 @@ export type AdapterConfiguration = {
      * cache mode
      * @default 'isomorphic'
      */
-    cacheMode: 'local' | 'remote' | 'isomorphic';
+    cacheMode: "local" | "remote" | "isomorphic";
     /** options from next.js */
     options: any;
     /** mark current build as main and remove cache for all previous */
     buildReady: boolean;
-}
+};

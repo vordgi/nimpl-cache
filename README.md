@@ -2,7 +2,7 @@
 
 Repository for implementing caching solutions in next.js.
 
-Visit https://nimpl.tech to view the full documentation.
+Visit [https://nimpl.dev](https://nimpl.dev/docs/cache-adapter) to view the full documentation.
 
 ## Advantages
 

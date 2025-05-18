@@ -2,7 +2,7 @@
 
 Base cacheHandler for next.js, which cache data in-memory
 
-Visit https://nimpl.tech/cache-in-memory to view the full documentation.
+Visit https://nimpl.dev/docs/cache-in-memory to view the full documentation.
 
 ## Installation
 

@@ -2,7 +2,7 @@
 
 An adapter that allows you to use any cache handler on the client and server side and switch between them. Adds support for running next.js applications in multiple instances.
 
-Visit https://nimpl.tech/cache-adapter to view the full documentation.
+Visit https://nimpl.dev/docs/cache-adapter to view the full documentation.
 
 ## Installation
 
